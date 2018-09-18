@@ -115,9 +115,9 @@ t1 = time.time()
 delay = 1000 * dt - (t1 - t0)
 
 anim=animation.FuncAnimation(fig,        # figure to plot in
-                        animate,    # function that is called on each frame
-                        frames=300, # total number of frames 
-                        interval=delay, # time to wait between each frame.
+                        animate,         # function that is called on each frame
+                        frames=300,      # total number of frames
+                        interval=delay,  # time to wait between each frame.
                         repeat=False,
                         blit=True, 
                         init_func=init # initialization
@@ -129,5 +129,3 @@ anim=animation.FuncAnimation(fig,        # figure to plot in
 # your system: for more information, see
 # http://matplotlib.sourceforge.net/api/animation_api.html
 anim.save('orbit.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
-
-plot.show()
