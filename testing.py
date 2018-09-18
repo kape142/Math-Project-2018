@@ -87,15 +87,15 @@ class RungeKuttaFehlberg54:
 
 
 def F(Y):
-    M = np.array([[1, 3],
-                  [2, 2]])
+    M = np.array([[0, 1],
+                  [-1, 0]])
     res = np.ones(3)
     res[1:3] = M.dot(Y[1:3])
     return res
 
 
 def main():
-    W = np.array([0, 5, 0])
+    W = np.array([0, 0, 1])
     h = 0.1
     tol = 05e-14
     tEnd = 1.0
@@ -113,4 +113,4 @@ def main():
 if __name__ == "__main__":
     # execute only if run as a script
     main()
-    print(3*np.exp(-1)+2*np.exp(4), -2*np.exp(-1)+2*np.exp(4))
+    print(np.sin(1), np.cos(1))
