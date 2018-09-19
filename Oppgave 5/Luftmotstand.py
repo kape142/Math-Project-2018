@@ -1,4 +1,5 @@
 import numpy as np
+import math as m
 Cd = 0.75
 
 def tetthet(h):
@@ -17,6 +18,16 @@ def tetthet(h):
     return (p / T) * 3.4855
 
 
+def Area(t):
+    if t < 0:
+        raise ValueError('Tiden kan ikke være negativ')
+
+    #Trinn 1 og 2 har samme dimeter
+    elif t < 529:
+        return m.pi*5.05**2
+    else:
+        return m.pi*3.3**2
+
 # CD er aerodynamisk egenskap, h er høyde, A er areal gitt et tverrsnit og v e fart.
-def luftmotstand(h, A, v):
-    return 0.5 * Cd * tetthet(h) * A * v ** 2
+def luftmotstand(h, t, v):
+    return 0.5 * Cd * tetthet(h) * Area(t) * v ** 2
