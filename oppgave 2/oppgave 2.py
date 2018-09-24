@@ -82,8 +82,10 @@ def example2(tol, pr):
 example1(05e-14, True)
 print("\n")
 example2(05e-14, True)
+print("\n")
 
 for i in range(10):
     cProfile.run("example2(05e-"+str(i+10)+",False)", "out"+str(i))
     p = pstats.Stats('out'+str(i))
+    print("tol = 05e-"+str(i+10))
     p.print_stats("nothing")
