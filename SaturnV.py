@@ -128,3 +128,41 @@ if __name__ == "__main__":
     ax1.set_ylabel("Skyvekraft (N)")
     ax1.set_xlabel("Tid (s)")
     plt.show()
+
+# Kilde Sauer
+def biseksjons_metode(funksjon, intervall, toleranse):
+    a = intervall[0]
+    b = intervall[1]
+    while (b-a)/2 > toleranse:
+        c = (a+b)/2
+        if funksjon(c) == 0:
+            return [a, b]
+        if funksjon(a)*funksjon(c) < 0:
+            b = c
+        else:
+            a = c
+    return [a, b]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
