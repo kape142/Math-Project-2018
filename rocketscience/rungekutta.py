@@ -45,6 +45,7 @@ class RungeKuttaFehlberg54:
         Wout = Win + self.h * (self.B[1, :].dot(s))
 
         E = np.linalg.norm(Wout - Zout, 2) / np.linalg.norm(Wout, 2)
+        # print(Win[0], E)
         return Wout, E
 
     def safeStep(self,
@@ -63,7 +64,7 @@ class RungeKuttaFehlberg54:
             Wout, E = self.step(Win)
             counter = counter + 1
             if counter > 10:
-                sys.exit(-1)
+                break
 
         self.adjustStep(E)
 
@@ -76,7 +77,7 @@ class RungeKuttaFehlberg54:
         if E == 0:
             s = 2
         else:
-            s = m.pow(self.tol * self.h / (2 * E), 0.25);
+            s = m.pow(self.tol * self.h / (2 * E), 0.25)
         self.h = s * self.h
 
     def divideStepByTwo(self):

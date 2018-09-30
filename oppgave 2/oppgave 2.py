@@ -1,8 +1,8 @@
-from RungeKuttaFehlberg import RungeKuttaFehlberg54
+from rocketscience.rungekutta import RungeKuttaFehlberg54
 import numpy as np
 import cProfile
 import pstats
-import timeit
+
 
 def F1(Y):
     M = np.array([[1, 3],
