@@ -5,10 +5,11 @@ import math as m
 Gkonstant = 6.674e-11
 masseJorda = 5.9736e24
 masseManen = 7.3477e22
-radiusJorda = 12756.28e3 / 2
+radiusJorda = 6371e3
 radiusManen = 1737.10e3
 fartJorda = [0.0, 0.0]
 fartManen = [0.0, 1022.0]
+rotasjonJorda = 0.4651e3
 posisjonJorda = [0.0, 0.0]
 posisjonManen = [384399e3, 0.0]
 Cd = 0.75
@@ -150,7 +151,7 @@ if __name__ == "__main__":
     for i in range(0, 1200):
         y.append(masse(i))
         x.append(i)
-        y1.append(SkyvekraftRakketmotor(i))
+        y1.append(SkyvekraftRakketmotor(i)/masse(i))
         x1.append(i)
 
     fig = plt.figure(1)
@@ -161,7 +162,7 @@ if __name__ == "__main__":
 
     ax1 = fig.add_subplot(212)
     ax1.plot(x1, y1)
-    ax1.set_ylabel("Skyvekraft (N)")
+    ax1.set_ylabel("Akselerasjon (F)")
     ax1.set_xlabel("Tid (s)")
     plt.show()
 

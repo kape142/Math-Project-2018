@@ -105,8 +105,8 @@ class OrbitRocket:
                  h=0.01,
                  tol=5e-14):
         self.grav_const = g
-        self.rocket = rocket
         self.planet = planet
+        self.rocket = rocket
         self.time = 0
         self.h = h
         self.tol = tol
@@ -142,6 +142,7 @@ class OrbitRocket:
             W, E = rkf54.safeStep(W)
             counter += 1
             if counter > 1000:
+                print("broken")
                 break
 
         rkf54.setStepLength(tEnd - W[0])
@@ -161,15 +162,14 @@ class OrbitRocket:
         py1 = x[3]
         vx1 = x[2]
         vy1 = x[4]
-        v = sqrt((vy1 * vy1) + (vx1 * vx1))
         dist = sqrt((px2 - px1) ** 2 + (py2 - py1) ** 2)
         h = dist - radiusJorda
-        rakettkrefter = self.rocket.propulsion(h, t, v)
+        rakettkrefter = self.rocket.propulsion(h, t, vy1)
 
         ax, ay = self.rocket.angle_decomp()
         rkx = ax * rakettkrefter
         rky = ay * rakettkrefter
-
+        # print(t, rkx, ((gm2 * (px2 - px1)) / (dist ** 3)), rky, ((gm2 * (py2 - py1)) / (dist ** 3)))
         z = np.zeros(5)
         z[0] = 1
         z[1] = vx1

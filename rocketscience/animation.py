@@ -91,7 +91,8 @@ def graph_rocket_path(orbit, stepsize, time):
     x, y = [], []
     for i in range(0, int(time/stepsize)):
         orbit.step(stepsize)
-        if orbit.rocket.check_crash(radiusJorda) or orbit.rocket.check_too_far(radiusJorda):
+        if orbit.rocket.check_crash(radiusJorda-1000) or orbit.rocket.check_too_far(radiusJorda):
+            print("crash")
             break
         x.append(orbit.rocket.pos_x())
         y.append(orbit.rocket.pos_y())
@@ -117,7 +118,7 @@ def graph_all_rocket_angles(orbit_creator, stepsize, time, interval, intervalste
             orbit.step(stepsize)
             if orbit.rocket.check_crash(radiusJorda-1000) or orbit.rocket.check_too_far(radiusJorda):
                 print("crash")
-                break
+                # break
             x.append(orbit.rocket.pos_x())
             y.append(orbit.rocket.pos_y())
         ax.plot(x, y)
