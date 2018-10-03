@@ -1,7 +1,8 @@
 from rocketscience.rungekutta import RungeKuttaFehlberg54
 import numpy as np
-import cProfile
+import matplotlib.pyplot as plt
 import pstats
+import time
 
 
 def F1(Y):
@@ -84,8 +85,23 @@ print("\n")
 example2(05e-14, True)
 print("\n")
 
-for i in range(10):
-    cProfile.run("example2(05e-"+str(i+10)+",False)", "out"+str(i))
-    p = pstats.Stats('out'+str(i))
-    print("tol = 05e-"+str(i+10))
-    p.print_stats("nothing")
+tol = []
+time_y = []
+for i in range(15):
+    exp = 10**(-(i))
+    t0 = time.time()
+    example2(exp ,False)
+    t1 = time.time()
+    tol.append(exp)
+    time_y.append(t1-t0)
+
+fig = plt.figure(1)
+ax = fig.add_subplot(111)
+ax.semilogx(tol, time_y)
+ax.axhline(y=10**(-2), color='r')
+ax.set_ylabel("Tid (s)")
+ax.set_xlabel("Toleranse")
+plt.show()
+
+print(tol)
+

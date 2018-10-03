@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import math as m
 
@@ -144,28 +143,6 @@ def total_kraft_oppover_kort(h, t, v, tid):
     if t > tid:
         return 0
     return (SkyvekraftRakketmotor(t) - luftmotstand(h, t, v)) / masse(t)
-
-
-if __name__ == "__main__":
-    y, x, y1, x1 = [], [], [], []
-    for i in range(0, 1200):
-        y.append(masse(i))
-        x.append(i)
-        y1.append(SkyvekraftRakketmotor(i)/masse(i))
-        x1.append(i)
-
-    fig = plt.figure(1)
-    ax = fig.add_subplot(211)
-    ax.plot(x, y)
-    ax.set_ylabel("Masse (kg)")
-    ax.set_xlabel("Tid (s)")
-
-    ax1 = fig.add_subplot(212)
-    ax1.plot(x1, y1)
-    ax1.set_ylabel("Akselerasjon (F)")
-    ax1.set_xlabel("Tid (s)")
-    plt.show()
-
 
 # Kilde Sauer
 def biseksjons_metode(funksjon, intervall, toleranse):
