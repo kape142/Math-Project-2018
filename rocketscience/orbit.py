@@ -103,13 +103,17 @@ class OrbitRocket:
                  planet=AstronomicalBody(1, 1, [0, 0], [0, 0]),
                  rocket=AstronomicalBody(1, 1, [0, 0], [0, 0]),
                  h=0.01,
-                 tol=5e-14):
+                 tol=5e-14,
+                 adjust_pitch=False,
+                 to_the_moon=False):
         self.grav_const = g
         self.planet = planet
         self.rocket = rocket
         self.time = 0
         self.h = h
         self.tol = tol
+        self.adjust_pitch = adjust_pitch
+        self.to_the_moon = to_the_moon
 
     def position(self):
         """compute the current x,y positions of the pendulum arms"""
@@ -138,11 +142,11 @@ class OrbitRocket:
 
         rkf54 = RungeKuttaFehlberg54(self.ydot, 5, self.h, self.tol)
         counter = 0
-        while W[0] < tEnd:
+        while W[0]+rkf54.h < tEnd:
             W, E = rkf54.safeStep(W)
             counter += 1
             if counter > 1000:
-                print("broken")
+                print("broken orbit")
                 break
 
         rkf54.setStepLength(tEnd - W[0])
@@ -150,6 +154,7 @@ class OrbitRocket:
         self.rocket.set_state(W)
         self.time = W[0]
         print(self.time, ": ", self.rocket.data((radiusJorda, 0)))
+        print(self.time, ": h: ", (self.rocket.pos_tot()-radiusJorda)/1000, "v: ", self.rocket.speed_tot())
         # print("(%.2f,%.2f)" % (self.rocket.pos_x()-radiusJorda, self.rocket.pos_y()))
 
     def ydot(self, x):
@@ -162,18 +167,40 @@ class OrbitRocket:
         py1 = x[3]
         vx1 = x[2]
         vy1 = x[4]
+        if self.adjust_pitch:
+            self.rocket.set_angle(-angle_delta(t))
+            if (2900 < t < 3100) and self.to_the_moon:
+                ang = np.arctan(vx1/vy1)
+                print(np.degrees(ang))
+                self.rocket.set_angle(np.degrees(ang))
+
+        v = sqrt(vx1 * vx1 + vy1 * vy1)
         dist = sqrt((px2 - px1) ** 2 + (py2 - py1) ** 2)
         h = dist - radiusJorda
-        rakettkrefter = self.rocket.propulsion(h, t, vy1)
+
+        rakettkrefter, drag = self.rocket.propulsion(h, t, v)
+        if (2900 < t < 3100) and self.to_the_moon:
+            self.rocket.propulsion = kutt_motor(1e9)
+            rakettkrefter, drag = self.rocket.propulsion(h, t-2900+820, v)
+
+        if v == 0:
+            dragx = 0
+            dragy = 0
+        else:
+            ratx = vx1 / v
+            raty = vy1 / v
+            dragx = ratx * drag
+            dragy = raty * drag
 
         ax, ay = self.rocket.angle_decomp()
         rkx = ax * rakettkrefter
         rky = ay * rakettkrefter
+
         # print(t, rkx, ((gm2 * (px2 - px1)) / (dist ** 3)), rky, ((gm2 * (py2 - py1)) / (dist ** 3)))
         z = np.zeros(5)
         z[0] = 1
         z[1] = vx1
-        z[2] = rkx + ((gm2 * (px2 - px1)) / (dist ** 3))  # massen til raketten skal både ganges inn og deles på
+        z[2] = rkx - dragx + ((gm2 * (px2 - px1)) / (dist ** 3))  # massen til raketten skal både ganges inn og deles på
         z[3] = vy1
-        z[4] = rky + ((gm2 * (py2 - py1)) / (dist ** 3))
+        z[4] = rky - dragy + ((gm2 * (py2 - py1)) / (dist ** 3))
         return z

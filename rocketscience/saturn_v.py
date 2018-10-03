@@ -83,6 +83,7 @@ def eksosFart(t):
     else:
         return 0
 
+
 # Farten til eksos-gass i hvert trinn
 # v_1 = 2.732*10**3
 # v_2 = 4.058*10**3
@@ -131,6 +132,19 @@ def F(t):
         return 0
 
 
+def angle_delta(t):
+    if t < 0:
+        raise ValueError('Tiden kan ikke være negativ')
+    elif t < 30:
+        return 0
+    elif t < 169:
+        return (60 / 138) * (t - 30)
+    elif t < 1029:
+        return angle_delta(168) + (t - 168) * (60 / 860)
+    else:
+        return angle_delta(768)
+
+
 def total_kraft_oppover(h, t, v):
     return total_kraft_oppover_kort(h, t, v, 1e9)
 
@@ -141,8 +155,8 @@ def kutt_motor(tid):
 
 def total_kraft_oppover_kort(h, t, v, tid):
     if t > tid:
-        return 0
-    return (SkyvekraftRakketmotor(t) - luftmotstand(h, t, v)) / masse(t)
+        return 0, luftmotstand(h, t, v)/masse(t)
+    return SkyvekraftRakketmotor(t) / masse(t), luftmotstand(h, t, v) / masse(t)
 
 # Kilde Sauer
 def biseksjons_metode(funksjon, intervall, toleranse):

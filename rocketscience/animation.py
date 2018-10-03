@@ -12,21 +12,19 @@ from mpl_toolkits.mplot3d import axes3d
 def circle(pos, size, resolution):
     u = np.linspace(0, 2 * np.pi, resolution)
     v = np.linspace(0, np.pi, resolution)
-    x = size * np.outer(np.cos(u), np.sin(v)) + pos[0]
+    x = size * np.outer(np.cos(u), np.sin(v))
     y = size * np.outer(np.sin(u), np.sin(v)) + pos[1]
-    z = size * np.outer(np.ones(np.size(u)), np.cos(v))
+    z = size * np.outer(np.ones(np.size(u)), np.cos(v)) + pos[0]
     return x, y, z
 
 
-def animate_two_bodies_3d(orbit, imagescaling, resolution, radius1, radius2, room_size, stepsize=1,
+def animate_two_bodies_3d(orbit, imagescaling, resolution, radius1, radius2, room_size, stepsize=1, steps_per_frame=1,
                           seconds=300, filnavn="orbit", angle=(90,180), colors=("green", "grey"), movie=True):
     fps = 30
     frames = seconds * fps
     skalering1 = radius1 * imagescaling
     skalering2 = radius2 * imagescaling
     start_time = time.time()
-
-    dt = 1. / fps  # 30 frames per second
 
     # The figure is set
     fig = plot.figure()
@@ -38,7 +36,8 @@ def animate_two_bodies_3d(orbit, imagescaling, resolution, radius1, radius2, roo
 
     def animate(i):
         """perform animation step"""
-        orbit.step(dt*stepsize)
+        for i in range(steps_per_frame):
+            orbit.step(stepsize)
         axes.clear()
         xs, ys = orbit.position()
         x, y, z = circle([0, 0], skalering1, resolution)
@@ -48,7 +47,7 @@ def animate_two_bodies_3d(orbit, imagescaling, resolution, radius1, radius2, roo
         axes.set_xlim3d(-room_size, room_size)
         axes.set_ylim3d(-room_size, room_size)
         axes.set_zlim3d(-room_size, room_size)
-        axes.view_init(angle[0],angle[1])
+        axes.view_init(angle[0], angle[1])
         plot.axis('off')
         # time_text = axes.text(0.02, 0.95, '', transform=axes.transAxes, s='0')
         # time_text.set_text('time = %.1f' % orbit.time)
@@ -79,7 +78,7 @@ def animate_two_bodies_3d(orbit, imagescaling, resolution, radius1, radius2, roo
     print("Rendering time: %.2fs" % float(end_time-start_time))
 
 
-def graph_rocket_path(orbit, stepsize, time):
+def graph_satellite_path(orbit, stepsize, time):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ex, ey = [], []
@@ -89,9 +88,36 @@ def graph_rocket_path(orbit, stepsize, time):
         ey.append((np.sin(i*2*np.pi/res))*radiusJorda)
     ax.plot(ex, ey)
     x, y = [], []
+    x.append(orbit.satellite.pos_x())
+    y.append(orbit.satellite.pos_y())
     for i in range(0, int(time/stepsize)):
         orbit.step(stepsize)
-        if orbit.rocket.check_crash(radiusJorda-1000) or orbit.rocket.check_too_far(radiusJorda):
+        x.append(orbit.satellite.pos_x())
+        y.append(orbit.satellite.pos_y())
+    ax.plot(x, y)
+    plt.show()
+
+
+def graph_rocket_path(orbit, stepsize, time):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    ex, ey = [], []
+    res = 1000
+    for i in range(0, res+1):
+        ex.append((np.cos(i*2*np.pi/res))*radiusJorda)
+        ey.append((np.sin(i*2*np.pi/res))*radiusJorda)
+    ax.plot(ex, ey)
+    mx, my = [], []
+    for i in range(0, res + 1):
+        mx.append((np.cos(i * 2 * np.pi / res)) * posisjonManen[0])
+        my.append((np.sin(i * 2 * np.pi / res)) * posisjonManen[0])
+    # ax.plot(mx, my)
+    x, y = [], []
+    x.append(orbit.rocket.pos_x())
+    y.append(orbit.rocket.pos_y())
+    for i in range(0, int(time/stepsize)):
+        orbit.step(stepsize)
+        if orbit.rocket.check_crash(radiusJorda-10000) or orbit.rocket.check_too_far(radiusJorda):
             print("crash")
             break
         x.append(orbit.rocket.pos_x())
@@ -114,11 +140,13 @@ def graph_all_rocket_angles(orbit_creator, stepsize, time, interval, intervalste
         print(angle)
         orbit = orbit_creator(angle)
         x, y = [], []
+        x.append(orbit.rocket.pos_x())
+        y.append(orbit.rocket.pos_y())
         for i in range(0, int(time / stepsize)):
             orbit.step(stepsize)
             if orbit.rocket.check_crash(radiusJorda-1000) or orbit.rocket.check_too_far(radiusJorda):
                 print("crash")
-                # break
+                break
             x.append(orbit.rocket.pos_x())
             y.append(orbit.rocket.pos_y())
         ax.plot(x, y)

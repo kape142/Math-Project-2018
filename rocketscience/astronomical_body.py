@@ -10,6 +10,7 @@ class AstronomicalBody:
         self.pos = init_pos
         self.speed = init_speed
         self.angle = np.radians(angle)
+        self.init_angle = angle
         self.propulsion = propulsion
 
     def speed_x(self):
@@ -30,11 +31,8 @@ class AstronomicalBody:
     def pos_tot(self):
         return sqrt(self.pos[0] * self.pos[0] + self.pos[1] * self.pos[1])
 
-    def set_angle(self, speed):
-        if speed[1] == 0:
-            self.angle = 0
-            return
-        self.angle = np.tan(speed[0]/speed[1])
+    def set_angle(self, angle):
+        self.angle = np.radians(self.init_angle+angle)
 
     def angle_decomp(self):
         return np.cos(self.angle), np.sin(self.angle)
@@ -43,7 +41,7 @@ class AstronomicalBody:
         return self.pos_tot() < radius
 
     def check_too_far(self, radius):
-        return self.pos_tot() > radius*10
+        return self.pos_tot() > radius*100
 
     def state(self):
         return [0, self.pos[0], self.speed[0], self.pos[1], self.speed[1]]
